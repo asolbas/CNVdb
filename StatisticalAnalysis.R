@@ -3,10 +3,6 @@ library("stringr")
 library(ggplot2)
 
 #INPUT DATA---------------------------------------------------------------------
-
-#df <- read.table(file = '~/tblab/raquel/CES_relanzados_CNVs/MAF_CNV_FJD_14022020/results/MAF_CNV_Database.tsv', sep = '\t', header = TRUE)
-#df <-  read.table(file = '~/bioinfo/NOBACKUP/raquel/MAF_CNV_FJD/results/MAF_CNV_Database_regions.tsv', sep = '\t', header = TRUE)
-#df <- read.table(file = '~/bioinfo/fjd/MAF_CNV_FJD/results/MAF_CNV_Database.tsv', sep = '\t', header = TRUE)
 df <- read.table(file = '~/bioinfo/fjd/MAF_CNV_FJD/results/MAF_CNV_Database_PC.tsv', sep = '\t', header = TRUE)
 
 #delete X and Y chromosoms
@@ -19,7 +15,6 @@ df<-cbind(ID=seq.int(nrow(df)),length=df$X2-df$X1,df)
 
 DUP <- df[df$AC_DUP>=1,]
 DEL <- df[df$AC_DEL>=1,]
-#head(DEL)
 
 #VENN DIAGRAM ------------------------------------------------------------------
 
@@ -38,12 +33,6 @@ while(i<ncol(DUP)){
   i=i+14
 }
 
-#para considerar el AC (todas las variantes) -->da lo mismo que antes
-# DUP_all=rep(DUP$ID,times=DUP$AC_DUP)
-# DEL_all=rep(DEL$ID,times=DEL$AC_DEL)
-# x<-list("DUP"=DUP_all,"DEL"=DEL_all)
-# ggvenn(x,fill_alpha = 0.4,text_size = 4.5,stroke_size = 0.5)
-
 #HISTOGRAM ---------------------------------------------------------------------
 
 #histograma (considera el AC)
@@ -59,9 +48,6 @@ p<-ggplot(AC_df, aes(x=type, y=count, fill=type)) +
   geom_text(aes(label=count), vjust=-1, color="black",
             position = position_dodge(0.9), size=2.75)
 plot(p)
-ggsave("~/tblab/ana/database/Figures/count_total.png")
-
-
 
 
 #Plot histogram by diseases
@@ -99,7 +85,6 @@ ggplot(data=AC_disease, aes(x=disease, y=AC, fill=type)) +
   scale_fill_manual(values=c("cornflowerblue","#FF6633")) +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
-ggsave("~/tblab/ana/database/Figures/count_by_disease.png", bg="white")
 
 #print histogram AC total (filtered by diseases with more than 100 cases)
 
@@ -115,7 +100,6 @@ p<-ggplot(AC_df_filt, aes(x=type, y=count, fill=type)) +
   geom_text(aes(label=count), vjust=-1, color="black",
             position = position_dodge(0.9), size=3)
 plot(p)
-ggsave("~/tblab/ana/database/Figures/count_total_filtered_by_disease.png",bg="white")
 
 
 # REGIONS COUNT BY AC ---------------------------------------------------------
@@ -138,7 +122,6 @@ ggplot(regions_by_AC,aes(x=AC,color=type, fill=type)) +
   scale_x_continuous(breaks = seq(0, 30, 2), limits=c(0,30))+
   ylab("region count")
 
-ggsave("~/tblab/ana/database/Figures/regions_by_AC.png",bg="white",width=10,height = 6)
 
 
 
@@ -177,24 +160,12 @@ ggplot(regions_by_AC,aes(x=AC,y=number_regions,color=disease, linetype=type)) +
   scale_x_continuous(breaks = seq(0, 30, 2), limits=c(1,30)) +
   ylim(0,3000)
 
-ggsave(paste("~/tblab/ana/database/Figures/regions_by_AC_disease.png"), bg="white",width=10,height=6)
-
-
-
-
-
 
 #BOXPLOT-----------------------------------------------------------------------
 #import file with confidence variants
-#check.names=FALSE to avoid putting an X in front of colnames that are numeric
-#variants <- read.table(file = '~/bioinfo/fjd/MAF_CNV_FJD/results/conf_DB_variantsvx.tsv', sep = '\t', header = TRUE,check.names=FALSE)
-#variants <- read.table(file = '~/bioinfo/fjd/MAF_CNV_FJD/results/conf_DB_variants_last.tsv', sep = '\t', header = TRUE,check.names=FALSE)
-#variants <- read.table(file = '~/bioinfo/fjd/MAF_CNV_FJD/results/conf_DB_variantsv2.tsv', sep = '\t', header = TRUE,check.names=FALSE)
-#variants <- read.table(file = '~/bioinfo/fjd/MAF_CNV_FJD/results/conf_DB_variants_filtered_outliers.tsv', sep = '\t', header = TRUE,check.names=FALSE)
 variants <- read.table(file = '~/bioinfo/fjd/MAF_CNV_FJD/results/conf_DB_variants_filtered_07_05.tsv', sep = '\t', header = TRUE,check.names=FALSE)
 
 #import file with metadata
-#metadata <- read.table(file = '~/bioinfo/fjd/MAF_FJD_v3.0/metadata/date_2021_12_29/mymetadatapathology_uniq_2021_12_29.txt', sep = '\t', header = TRUE)
 metadata <- read.table(file = '~/bioinfo/fjd/MAF_FJD_v3.0/metadata/date_2022_03_28/mymetadatapathology_uniq_2022_03_28.txt', sep = '\t', header = TRUE)
 
 new_names<-vector()
@@ -208,15 +179,12 @@ data <- data.frame(SAMPLE=character(), disease=character(), type=character(), AC
 #parse variants file
 for (i in seq(4,(ncol(variants)), by=1)){
   sample <- colnames(variants[i])
-  #sample <- unlist(strsplit(colnames(variants[i]), split='-CES', fixed=TRUE))[1]
   disease <- unique(metadata[metadata$SAMPLE==sample,]$Categoria)
-  #AC_DUP <- length(which(variants[i]==1)) 
-  #AC_DEL <- length(which(variants[i]==-1))
+
   AC_DUP <- length(which(variants[i]==1)) + 2*length(which(variants[i]==2))
   AC_DEL <- length(which(variants[i]==-1)) + 2*length(which(variants[i]==-2))
   
   if (! (disease %in% few_cases_ds) ){
-    #if ( (length(disease) != 0) & (! (disease %in% few_cases_ds) )){
     data[nrow(data) + 1,] = c(sample, disease, "DUP", AC_DUP)
     data[nrow(data) + 1,] = c(sample, disease, "DEL", AC_DEL)
   }
@@ -228,24 +196,16 @@ data$AC <- as.numeric(as.character(data$AC))
 #outlier.shape=NA to remove outliers
 ggplot(data=data, aes(x=disease, y=AC, fill=type)) +
   geom_boxplot() +
-  #geom_boxplot(outlier.shape = NA) +
-  #scale_fill_brewer(palette="Paired") +
   scale_fill_manual(values=c("cornflowerblue","#FF6633"))  +
-  #ylim(0,30) +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
-
-ggsave("~/tblab/ana/database/Figures/boxplot.png", bg="white")
 
 # VIOLIN PLOT -----------------------------------------------------------------
 ggplot(data=data, aes(x=disease, y=AC, fill=type)) +
   geom_violin() +
-  #scale_fill_brewer(palette="Paired") +
   scale_fill_manual(values=c("cornflowerblue","#FF6633"))  +
-  #ylim(0,270) + 
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
-ggsave("~/tblab/ana/database/Figures/violinplot.png")
 
 # SWARM PLOT ----------------------------------------------------------------
 library(ggbeeswarm)
@@ -256,7 +216,6 @@ ggplot(data=data, aes(x=disease, y=AC, col=type)) +
   scale_color_manual(values=c("cornflowerblue","#FF6633"))  +
   #ylim(0,270) +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
-ggsave("~/tblab/ana/database/Figures/swarmplot.png")
 
 
 #STATISTICAL ANALYSIS ---------------------------------------------------------
@@ -271,8 +230,6 @@ data_DEL <- data[data$type == "DEL",]
 data_DUP$disease <- as.factor(data_DUP$disease)
 data_DEL$disease <- as.factor(data_DEL$disease)
 
-#levels(data_DUP$disease)
-
 #Perform test 
 kruskal.test(AC~disease, data=data_DUP)
 kruskal.test(AC~disease, data=data_DEL)
@@ -281,10 +238,6 @@ kruskal.test(AC~disease, data=data_DEL)
 pairwise.wilcox.test(data_DUP$AC,data_DUP$disease,p.adjust.method = "BH")
 pairwise.wilcox.test(data_DEL$AC,data_DEL$disease,p.adjust.method = "BH")
 
-# pairwise.t.test(data_DUP$AC,data_DUP$disease,p.adjust.method = "BH")
-# pairwise.t.test(data_DEL$AC,data_DEL$disease,p.adjust.method = "BH")
-
-
 ## Test duplications and deletions ---------------------------------------------
 #Boxplot
 data_DUP$type <- as.factor(data_DUP$type)
@@ -292,15 +245,6 @@ data_DEL$type <- as.factor(data_DEL$type)
 
 ggplot(data=data, aes(x=type, y=AC, fill=type)) +
   geom_boxplot() +
-  #geom_boxplot(outlier.shape = NA) +
-  #scale_fill_brewer(palette="Paired") +
-  scale_fill_manual(values=c("cornflowerblue","#FF6633"))  +
-  #ylim(0,30) +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
-ggsave("~/tblab/ana/database/Figures/boxplot_type.png", bg="white")
-
-ggplot(data=data, aes(x=type, y=AC, fill=type)) +
-  geom_violin() +
   #geom_boxplot(outlier.shape = NA) +
   #scale_fill_brewer(palette="Paired") +
   scale_fill_manual(values=c("cornflowerblue","#FF6633"))  +
@@ -319,15 +263,6 @@ library(data.table)
 
 data$type<-as.factor(data$type)
 data$disease<-as.factor(data$disease)
-
-
-# stat.test <- data %>%
-#   group_by(disease) %>%
-#   t_test(AC ~ type, alternative = "two.sided",
-#          mu = 0, paired = TRUE, conf.level = 0.95) %>%
-#   adjust_pvalue(method = "BH") %>%
-#   add_significance()
-# stat.test
 
 stat.test <- data %>%
   group_by(disease) %>%
