@@ -64,9 +64,6 @@ run_rvgo<- function(enrich_tab, ont){
   
   #create GO parents data frame
   #will store the output
-  #df_reduced <- data.frame(matrix(
-  #vector(), 0, ncol(enrich_tab), dimnames=list(c(), colnames(enrich_tab))),
-  #stringsAsFactors=F)
   
   df_reduced <- data.frame(matrix(ncol=ncol(enrich_tab),nrow=0))
   colnames(df_reduced) <- colnames(enrich_tab)
@@ -110,112 +107,6 @@ run_rvgo<- function(enrich_tab, ont){
   return(df_reduced)
 }
 
-
-# #ENRICHMENT TEST ---------------------------------------------------------------
-# 
-# ##find GO terms with 5-500 genes -----------------------------------------------
-# GO_count<-as.data.frame(table(unlist(DUP_GO[DUP_GO$ONTOLOGY=="MF",]$GO)))
-# colnames(GO_count)<-c("GO","number_genes")
-# 
-# GO_filt<- GO_count[GO_count$number_genes>=5 & GO_count$number_genes<=500,]$GO
-# 
-# 
-# #empty data frame with results of fisher's test
-# fisher_df<-data.frame(GO=character(),GOTERM=character(), disease=character(), 
-#                       gene_count=integer(), gene_total=character(), 
-#                       gene_ratio=double(), p_value=double())
-# 
-# #diseases with less than 100 cases (sería mejor sacarlo fuera
-# #de la función y meterlo como parámetro)
-# few_cases_ds <- c("Miopatias","Metabolicas","Inflamatoria","Esterilidad",
-#                   "Endocrinologica", "Dermatologicas","Prenatal","Cancer","Varios")
-# 
-# ## association between GO ids and descriptions ---------------------------------
-# TERM_ls<-as.list(GOTERM)
-# 
-# ## parse diseases with >100 cases ----------------------------------------------
-# 
-# for (i_ds in seq(11,(ncol(DUP_gene)-2), by=6)) {
-#   disease_col=names(DUP_gene)[i_ds] #get column name
-#   disease<-unlist(strsplit(disease_col, split='_', fixed=TRUE))[1] #disease name
-#   
-#   #if (!( disease %in% few_cases_ds)){
-#   if (disease=="Cardiopatia"){
-#     #get AC for disease and pseudocontrols
-#     aux_ds <- DUP_gene[, c(4,i_ds)]
-#     colnames(aux_ds)<-c("Gene_name","AC")
-#     aux_PC <- DUP_gene[, c(4,i_ds+3)]
-#     colnames(aux_PC)<-c("Gene_name","AC")
-#     
-#     #aggregate AC by gene
-#     count_ds <- aggregate(aux_ds$AC, by=list(gene=aux_ds$Gene_name), FUN=sum)
-#     colnames(count_ds)<-c("Gene_name","AC")
-#     
-#     count_PC <- aggregate(aux_PC$AC, by=list(gene=aux_PC$Gene_name), FUN=sum)
-#     colnames(count_PC)<-c("Gene_name","AC")
-#     
-#     #filter tables by AC>2
-#     count_filt_ds <- count_ds[count_ds$AC>2,]
-#     count_filt_PC <- count_PC[count_PC$AC>2,]
-#     
-#     ## functional annotation of genes -----------------------------------------
-#     GO_ds <- unique(DUP_GO[(DUP_GO$SYMBOL %in% count_filt_ds$Gene_name)
-#                            & DUP_GO$ONTOLOGY=="MF",]$GO)
-#     GO_PC <- unique(DUP_GO[(DUP_GO$SYMBOL %in% count_filt_PC$Gene_name)
-#                            & DUP_GO$ONTOLOGY=="MF",]$GO)
-#     
-#     ## parse list of GOs ------------------------------------------------------
-#     for (id in GO_ds){
-#       
-#       #run test for GOs with 5-500 genes 
-#       
-#       if (id %in% GO_filt){
-#         
-#         #get description for GO id
-#         term_desc<-Term(TERM_ls[[id]])
-#         print(id)
-#         print(term_desc)
-#         
-#         #list of annotated genes associated with this GO
-#         gene_GO_list <- unique(DUP_GO[DUP_GO$GO==id,]$SYMBOL)
-#         #list of annotated genes not associated with this GO
-#         #gene_NOGO_list <- unique(DUP_GO[DUP_GO$GO!=id & DUP_GO$ONTOLOGY=="MF",]$SYMBOL)
-#         gene_NOGO_list <- unique(DUP_GO[DUP_GO$ONTOLOGY=="MF" & !(DUP_GO$SYMBOL %in% gene_GO_list) ,]$SYMBOL)
-#         
-#         #create contingency matrix
-#         count_GO_ds <- sum(count_filt_ds[count_filt_ds$Gene_name %in% gene_GO_list,]$AC)
-#         count_NOGO_ds <- sum(count_filt_ds[count_filt_ds$Gene_name %in% gene_NOGO_list,]$AC)
-#         count_GO_PC <- sum(count_filt_PC[count_filt_PC$Gene_name %in% gene_GO_list,]$AC)
-#         count_NOGO_PC <- sum(count_filt_PC[count_filt_PC$Gene_name %in% gene_NOGO_list,]$AC)
-#         
-#         cont_mx<-matrix(c(count_GO_ds, count_NOGO_ds, count_GO_PC, count_NOGO_PC),
-#                         nrow = 2,
-#                         dimnames = list(c("GO", "NO GO"),
-#                                         c("Disease", "No disease")))
-#         
-#         print(cont_mx)
-#         
-#         ## gene count and gene ratio ---------------------------------------------
-#         gene_count <- length(count_filt_ds[count_filt_ds$Gene_name %in% gene_GO_list,]$Gene_name)
-#         gene_total <- length(count_filt_ds$Gene_name)
-#         gene_ratio <- gene_count/gene_total
-#         
-#         ## Fisher test: get p-value ----------------------------------------------
-#         p_value<-fisher.test(cont_mx, alternative="greater")$p.value
-#         fisher_df[nrow(fisher_df) + 1,] = c(id, term_desc, disease, gene_count, gene_total,gene_ratio, p_value)
-#       }
-#     }
-#   }
-# }
-# ## Benjamini-Hochberg correction of p-value ------------------------------------
-# p_adj<-p.adjust(fisher_df$p_value, method="fdr") #adjusted p-value
-# fisher_df$p_adjust=p_adj
-# 
-# ## p adjust < 0.05 -------------------------------------------------------------
-# fisher_sig <- fisher_df[fisher_df$p_adjust <= 0.05,]
-# 
-# ## Reduce redundat terms with rrvigo -------------------------------------------
-# fisher_sig_red <- run_rvgo(fisher_sig,"MF")
 
 # ENRICHMENT FUNCTION ----------------------------------------------------------
 run_GO <- function(gene_df,GO_df,ont){
@@ -281,7 +172,6 @@ run_GO <- function(gene_df,GO_df,ont){
           #list of annotated genes associated with this GO
           gene_GO_list <- unique(GO_df[GO_df$GO==id,]$SYMBOL)
           #list of annotated genes not associated with this GO
-          #gene_NOGO_list <- unique(GO_df[GO_df$GO!=id & GO_df$ONTOLOGY==ont,]$SYMBOL)
           gene_NOGO_list <- unique(GO_df[GO_df$ONTOLOGY==ont & !(GO_df$SYMBOL %in% gene_GO_list) ,]$SYMBOL)
           
           #create contingency matrix
@@ -333,15 +223,6 @@ DEL_CC_sig_red <- run_GO(DEL_gene,DEL_GO,"CC")
 DEL_BP_sig_red <- run_GO(DEL_gene,DEL_GO,"BP")
 DEL_MF_sig_red <- run_GO(DEL_gene,DEL_GO,"MF")
 
-## write output ---------------------------------------------------------------
-write.table(DUP_CC_sig_red, file='~/tblab/ana/tests/V2/GO/DUP_CC_fisher_pval.tsv',row.names = FALSE, quote=FALSE, sep='\t')
-write.table(DUP_BP_sig_red, file='~/tblab/ana/tests/V2/GO/DUP_BP_fisher_pval.tsv',row.names = FALSE, quote=FALSE, sep='\t')
-write.table(DUP_MF_sig_red, file='~/tblab/ana/tests/V2/GO/DUP_MF_fisher_pval.tsv',row.names = FALSE, quote=FALSE, sep='\t')
-
-write.table(DEL_CC_sig_red, file='~/tblab/ana/tests/V2/GO/DEL_CC_fisher_pval.tsv',row.names = FALSE, quote=FALSE, sep='\t')
-write.table(DEL_BP_sig_red, file='~/tblab/ana/tests/V2/GO/DEL_BP_fisher_pval.tsv',row.names = FALSE, quote=FALSE, sep='\t')
-write.table(DEL_MF_sig_red, file='~/tblab/ana/tests/V2/GO/DEL_MF_fisher_pval.tsv',row.names = FALSE, quote=FALSE, sep='\t')
-
 # DOTPLOT REPRESENTATION -------------------------------------------------------
 prepare_data <- function(enrich_tab, ont){
   #filter by p_adjust
@@ -383,8 +264,6 @@ dotplot_rep <- function(enrich_CC,enrich_BP,enrich_MF,type){
         title = ds
       )
     dp_all <- plot(dp + facet_grid(rows = vars(ontology),scales = "free_y"))
-    ggsave(dp_all, filename = paste("~/tblab/ana/tests/V2/GO/Figures_v3/",type,"_",ds,".png"),
-           bg="white",width = 10, height = 6, dpi = 600)
   }
 }
 
@@ -452,8 +331,6 @@ plot_JI<- function(df,type,ont){
       panel.border = element_blank(),
       panel.background = element_blank(),
       axis.ticks = element_blank())
-  
-  ggsave(p, filename = paste("~/tblab/ana/tests/V2/GO/Figures_v3/",title,".png"),bg="white",dpi = 600)
 }
 
 plot_JI(DUP_CC_sig_red,"DUP","CC")
@@ -527,7 +404,6 @@ plot_JI_GO<- function(df,type){
       panel.background = element_blank(),
       axis.ticks = element_blank())
   
-  ggsave(p, filename = paste("~/tblab/ana/tests/V2/GO/Figures_v3/JI_",title,".png"),bg="white",dpi = 600)
 }
 
 plot_JI_GO(rbind(DUP_CC_sig_red,DUP_BP_sig_red, DUP_MF_sig_red),"DUP")
