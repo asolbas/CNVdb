@@ -28,14 +28,10 @@ awk '{ if (NR==1) print "#"$1"\t"$2"\t"$3"\t"$4 }' $input > $output.bed
 awk '{if (NR!=1) print $1"\t"$2"\t"$3"\t"$4 }' ${input}  >> $output.bed
 
 #run AnnotSV
-#$ANNOTSV/bin/AnnotSV -SVinputFile ${output}/cnvs.bed -outputFile ${output}/cnvs.annotated.tsv -genomeBuild
 
 $ANNOTSV/bin/AnnotSV -SVinputFile $output.bed -outputFile $output.annotated.tsv -svtBEDcol 4 -genomeBuild
 
 #CREATE GENE AND ACMG CLASS LIST
-
-#awk '{if ($7=="split") {print $9}} ' ${output}/$input.annotated.tsv | sort | uniq  > ${output}/${input}_genelist.txt
-
 
 awk '{ if (NR==1) { print $2"\t"$3"\t"$4"\t"$9"\t"$NF }}' $output.annotated.tsv >  ${output}_gene_cnv.tsv
 
@@ -47,6 +43,5 @@ awk '{ gsub(/full=/,"", $5); print $1"\t"$2"\t"$3"\t"$4"\t"$5 } ' aux.temp >> ${
 #delete temporal files
 
 rm $output.bed 
-
 rm aux.temp 
 
