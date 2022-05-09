@@ -13,3 +13,8 @@ The files contained in this repository are:
 - __genes.R__: statistical analysis of the genes annotated int the database. 
 - __GO_v2.R, KEGG_v2.R, InterPro_v2.R and HPO_v2__: functional annotation of the genes mapped to the regions of the CNV database and enrichment analysis. 
 
+### Contact
+
+Ana Solbas Casajús
+
+a.solbas@alumnos.upm.es
