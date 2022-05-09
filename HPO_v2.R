@@ -158,9 +158,6 @@ run_HPO <- function(HPO_df){
 DUP_hpo_fisher_sig <- run_HPO(DUP_HPO)
 DEL_hpo_fisher_sig <- run_HPO(DEL_HPO)
 
-#WRITE OUTPUT ------------------------------------------------------------------
-write.table(DUP_hpo_fisher_sig, file='~/tblab/ana/tests/V2/HPO/DUP_hpo_fisher.tsv',row.names = FALSE, quote=FALSE, sep='\t')
-write.table(DEL_hpo_fisher_sig, file='~/tblab/ana/tests/V2/HPO/DEL_hpo_fisher.tsv',row.names = FALSE, quote=FALSE, sep='\t')
 
 ## DOTPLOT REPRESENTATION ------------------------------------------------------
 #create function
@@ -186,7 +183,6 @@ dotplot_rep <- function(enrich_tab,type){
     
     title=paste(type,"_",ds)
     #plot(dp)
-    ggsave(dp, filename = paste("~/tblab/ana/tests/V2/HPO/Figures/",title,".png"),bg="white",dpi = 600)
   }
 }
 
