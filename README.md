@@ -1,5 +1,8 @@
 # CNVdb
-Statistical analysis, annotation and functional enrichment analsysis of the FJD CNV database of allele frequencies
+Statistical analysis, annotation and functional enrichment analsysis of the IIS-FJD CNV database of allele frequencies. 
+
+### Usage
+These scripts were developed to analyse the CNV database of the Instituto de Investigación Sanitaria Fundación Jiménez Díaz (IIS-FJD). They are specific for this database and therefore they will not work for CNV databases that do not share the same structure. 
 
 ### Roadmap
 The files contained in this repository are: 
