@@ -3,7 +3,7 @@ library("ggplot2")
 library("UpSetR")
 #library(devtools)
 #install_github("jokergoo/ComplexHeatmap")
-install_github("hms-dbmi/UpSetR")
+#install_github("hms-dbmi/UpSetR")
 library("ComplexHeatmap")
 library(reshape2)
 
@@ -99,7 +99,6 @@ p<- ggplot(data=count_df, aes(x=disease, y=count, fill=type)) +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
 plot(p)
-ggsave("~/tblab/ana/tests/V2/genes/gene_count_per_disease.png", bg="white", dpi=600)
 
 # UPSET PLOT GENES BY DISEASE --------------------------------------------------
 upset<-function(gene_df,few_cases_ds){
@@ -205,9 +204,7 @@ heatmap_genes<-function(gene_df,few_cases_ds){
 }
 #plot heatmap
 heatmap_genes(DUP_gene,few_cases_ds)
-ggsave("~/tblab/ana/tests/V2/genes/heatmap_genes_DUP.png", bg="white", dpi=600)
 heatmap_genes(DEL_gene,few_cases_ds)
-ggsave("~/tblab/ana/tests/V2/genes/heatmap_genes_DEL.png", bg="white", dpi=600)
 
 #JACCARD INDEX GENES------------------------------------------------------------
 jaccard_index<-function(gene_df,few_cases_ds){
@@ -282,105 +279,8 @@ jaccard_index<-function(gene_df,few_cases_ds){
 }
 #plot jaccard index
 jaccard_index(DUP_gene,few_cases_ds)
-ggsave("~/tblab/ana/tests/V2/genes/jaccardIndex_DUP.png", bg="white", dpi = 600)
 
 jaccard_index(DEL_gene,few_cases_ds)
-ggsave("~/tblab/ana/tests/V2/genes/jaccardIndex_DEL.png", bg="white", dpi = 600)
-
-#HEATMAP NUMBER OF GENES BY JACCARD INDEX---------------------------------------
-heatmap_jaccard<-function(gene_df,few_cases_ds){
-  #get diseases names
-  ds_list <- vector(length=11)
-  ds_col_list <- vector(length=11)
-  
-  #parse diseases
-  i=1
-  for (i_ds in seq(11,(ncol(gene_df)-2), by=6)) {
-    disease_col=names(gene_df)[i_ds] #get column name
-    disease<-unlist(strsplit(disease_col, split='_', fixed=TRUE))[1] #disease name
-    
-    if (!( disease %in% few_cases_ds)){
-      ds_list[i]=disease
-      ds_col_list[i]=disease_col
-      i=i+1
-    }
-  }
-  
-  #build heatmap
-  heatMap<-matrix(, nrow = length(ds_list), ncol = length(ds_list))
-  rownames(heatMap) <- ds_list
-  colnames(heatMap) <- ds_list
-  
-  #build jaccard index matrix
-  JI<-matrix(, nrow = length(ds_list), ncol = length(ds_list))
-  rownames(JI) <- ds_list
-  colnames(JI) <- ds_list
-  
-  for (i in 1:length(ds_list)){
-    for (j in 1:i){
-      ds1_col<-which(colnames(gene_df) == ds_col_list[i]) #index column AC disease 1
-      ds2_col<-which(colnames(gene_df) == ds_col_list[j]) #index column AC disease 2
-      intersect_ds<-intersect(gene_df[gene_df[ds1_col]>=1, 4], #intersection of d1 and ds2 genes
-                              gene_df[gene_df[ds2_col]>=1, 4])
-      
-      union_ds<-union(gene_df[gene_df[ds1_col]>=1, 4],  #union of ds1 and ds2 genes
-                      gene_df[gene_df[ds2_col]>=1, 4])
-      
-      JI[i,j] <-length(intersect_ds)/length(union_ds)
-      JI[j,i] <- JI[i,j]
-      
-      heatMap[i,j] <-length(intersect_ds)
-      heatMap[j,i] <- heatMap[i,j]
-    }
-  }
-  
-  # Get lower triangle of the correlation matrix
-  get_upper_tri<-function(cormat){
-    cormat[lower.tri(cormat)] <- NA
-    return(cormat)
-  }
-  
-  lower_tri_genes <- get_upper_tri(heatMap)
-  melted_genes <- melt(lower_tri_genes, na.rm=TRUE)
-  
-  lower_tri_JI <- get_upper_tri(JI)
-  melted_JI <- melt(lower_tri_JI, na.rm=TRUE)
-  
-  type=unique(gene_df$SV_type)
-  
-  #plot heatmap
-  ggplot(data = melted_JI, aes(x=Var1, y=Var2, fill=value)) +
-    geom_tile() +
-    ggtitle(type)+
-    scale_fill_gradient2(low = "white", high = "cornflowerblue",
-                         space = "Lab",
-                         name="Jaccard Index") +
-    geom_text(data= melted_genes, aes(Var1, Var2, 
-                  label = round(value, digits=2)), color = "black", size = 2.5) +
-
-    theme_minimal() +
-    scale_y_discrete(limits=rev)+
-    theme(axis.text.x = element_text(angle = 45, vjust = 1,
-                                     size = 12, hjust = 1))+
-    coord_fixed() +
-    theme(
-      axis.title.x = element_blank(),
-      axis.title.y = element_blank(),
-      panel.grid.major = element_blank(),
-      panel.border = element_blank(),
-      panel.background = element_blank(),
-      axis.ticks = element_blank())
-  
-}
-#plot heatmap
-heatmap_jaccard(DUP_gene,few_cases_ds)
-
-heatmap_jaccard(DEL_gene,few_cases_ds)
-
-
-
-
-
 
 # COUNT NUMBER GENES PER CNV NUMBER (AC) ---------------------------------------
 AC_by_gene <- data.frame(gene=character(), AC=character(), type=character(),disease=character())
@@ -423,8 +323,3 @@ ggplot(AC_by_gene,aes(x=AC,,color=disease, linetype=type)) +
   geom_density(aes(y=..count..)) +
   ylab("gene count")+
   scale_x_continuous(breaks = seq(0, 30, 2), limits=c(0,30)) 
-
-ggsave(paste("~/tblab/ana/tests/V2/genes/AC_gene.png"), bg="white",width=10,height=6)
-
-DUP_AC2 <- unique(AC_by_gene[AC_by_gene$type=="DUP" & AC_by_gene$AC>=2,]$gene)
-DEL_AC2 <- unique(AC_by_gene[AC_by_gene$type=="DEL" & AC_by_gene$AC>=2,]$gene)
