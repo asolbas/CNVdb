@@ -160,11 +160,6 @@ run_INTERPRO <- function(INTERPRO_df){
 DUP_Interpro_fisher_sig <- run_INTERPRO(DUP_INTERPRO)
 DEL_Interpro_fisher_sig <- run_INTERPRO(DEL_INTERPRO)
 
-## GENERATE OUTPUT -------------------------------------------------------------
-
-write.table(DUP_Interpro_fisher_sig, file='~/tblab/ana/tests/V2/InterPro/DUP_interpro_fisher_pval.tsv',row.names = FALSE, quote=FALSE, sep='\t')
-write.table(DEL_Interpro_fisher_sig, file='~/tblab/ana/tests/V2/InterPro/DEL_interpro_fisher_pval.tsv',row.names = FALSE, quote=FALSE, sep='\t')
-
 
 ## DOTPLOT REPRESENTATION ------------------------------------------------------
 #create function
@@ -190,7 +185,6 @@ dotplot_rep <- function(enrich_tab, type){
       ggtitle(ds) 
     
     title=paste(type,"_",ds)
-    ggsave(dp, filename = paste("~/tblab/ana/tests/V2/InterPro/Figures/",title,".png"),bg="white",dpi = 600)
     #plot(dp)
   }
 }
@@ -261,8 +255,6 @@ plot_JI_Interpro<- function(df,type){
       panel.border = element_blank(),
       panel.background = element_blank(),
       axis.ticks = element_blank())
-  
-  ggsave(p, filename = paste("~/tblab/ana/tests/V2/InterPro/Figures/JI_",title,".png"),bg="white",dpi = 600)
 }
 
 plot_JI_Interpro(DUP_Interpro_fisher_sig,"DUP")
