@@ -6,7 +6,7 @@ These scripts were developed to analyse the CNV database of the Instituto de Inv
 
 ### Roadmap
 The files contained in this repository are: 
-- __VennDiagram.R__: statistical and exploratory data analysis of the database. 
+- __StatisticalAnalysis.R__: statistical and exploratory data analysis of the database. 
 - __DensityPlot.R__: tools for the data visualization of the distribution of the genomic regions contained in the database. 
 - __split_matrix.py__: divides of the data base of CNVs in two: one for duplications and another for deletions. 
 - __run_AnnotSV.sh__: bash script to annotate the regions of the CNV data base. 
