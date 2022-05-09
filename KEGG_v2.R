@@ -153,10 +153,6 @@ run_KEGG <- function(KEGG_df){
 DUP_Kegg_fisher_sig <- run_KEGG(DUP_KEGG)
 DEL_Kegg_fisher_sig <- run_KEGG(DEL_KEGG)
 
-#Write output
-write.table(DUP_Kegg_fisher_sig, file='~/tblab/ana/tests/V2/KEGG/DUP_kegg_fisher.tsv',row.names = FALSE, quote=FALSE, sep='\t')
-write.table(DEL_Kegg_fisher_sig, file='~/tblab/ana/tests/V2/KEGG/DEL_kegg_fisher.tsv',row.names = FALSE, quote=FALSE, sep='\t')
-
 #DOTPLOT------------------------------------------------------------------------
 
 #create function
@@ -177,8 +173,7 @@ dotplot_rep <- function(enrich_filtered, title){
     ylab("Kegg categories") + xlab("Diseases") +
     ggtitle(title) +
     theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
-  
-  ggsave(dp, filename = paste("~/tblab/ana/tests/V2/KEGG/Figures/",title,".png"),bg="white",dpi = 600)
+
 }
 
 #run functions
@@ -247,8 +242,7 @@ plot_JI_Kegg<- function(df,type){
       panel.border = element_blank(),
       panel.background = element_blank(),
       axis.ticks = element_blank())
-  
-  ggsave(p, filename = paste("~/tblab/ana/tests/V2/KEGG/Figures/JI_",title,".png"),bg="white",dpi = 600)
+
 }
 
 plot_JI_Kegg(DUP_Kegg_fisher_sig,"DUP")
