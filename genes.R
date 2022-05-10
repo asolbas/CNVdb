@@ -323,3 +323,31 @@ ggplot(AC_by_gene,aes(x=AC,,color=disease, linetype=type)) +
   geom_density(aes(y=..count..)) +
   ylab("gene count")+
   scale_x_continuous(breaks = seq(0, 30, 2), limits=c(0,30)) 
+
+# MORE AFFECTED GENES BY PATHOLOGY  --------------------------------------------
+
+#order table by AC in descending order
+AC_by_gene_ord <-AC_by_gene[order(-AC_by_gene$AC),]
+
+
+
+for (ds in ds_list){
+  AC_by_gene_ord_ds <- AC_by_gene_ord[AC_by_gene_ord$disease==ds,]
+  
+  aux <- rbind(AC_by_gene_ord_ds[AC_by_gene_ord_ds$type=="DEL",][1:15,],
+               AC_by_gene_ord_ds[AC_by_gene_ord_ds$type=="DUP",][1:15,])
+  
+  p <- ggplot(aux, aes(x=reorder(gene,AC), y=AC, fill=type)) +
+    geom_bar(stat="identity") +
+    scale_fill_manual(values=c("cornflowerblue","#FF6633")) +
+    xlab("Gen") +
+    ggtitle(paste("Genes más afectados en: ",ds)) + 
+    theme(legend.title = element_blank()) 
+
+  p <- p + coord_flip()
+  
+  dp_all <- plot(p + facet_grid(rows = vars(type),scales = "free_y"))
+  dp_all
+}
+
+
