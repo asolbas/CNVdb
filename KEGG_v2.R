@@ -5,13 +5,13 @@ theme_set(theme_bw())
 #IMPORT DATA FILES -------------------------------------------------------------
 #Data bases
 DUP_db<- read.table(
-  file = '~/tblab/ana/database/DB_DUP_PC.tsv',
+  file = 'DB_DUP_PC.tsv',
   sep = '\t', header = TRUE, stringsAsFactors = FALSE,check.names=FALSE)
 #add a unique id for each cnv
 DUP_db<-cbind(ID=seq.int(nrow(DUP_db)),DUP_db)
 
 DEL_db<- read.table(
-  file = '~/tblab/ana/database/DB_DEL_PC.tsv',
+  file = 'DB_DEL_PC.tsv',
   sep = '\t', header = TRUE, stringsAsFactors = FALSE,check.names=FALSE)
 #add unique id for each cnv
 DEL_db<-cbind(ID=seq.int(nrow(DEL_db)),DEL_db)
@@ -20,7 +20,7 @@ DEL_db<-cbind(ID=seq.int(nrow(DEL_db)),DEL_db)
 
 #Sophia annotation file
 sophia <- read.table(
-  file = '~/bioinfo/fjd/beds/reanalysisBeds/sophia_clinical_exome_ces_annotated.bed',
+  file = 'sophia_clinical_exome_ces_annotated.bed',
   sep = '\t', header = FALSE, stringsAsFactors = FALSE,check.names=FALSE)
 
 colnames(sophia) <- c("chr","start","end","Gene_name")
@@ -35,7 +35,7 @@ DEL_gene <-DEL_gene[order(DEL_gene$ID, DEL_gene$start),]
 
 # KEGG ANNOTATIONS -------------------------------------------------------------
 kegg_categories<-read.table(
-  file = '~/tblab/ana/tests/kegg/kegg_categories3.tsv', 
+  file = 'kegg_categories3.tsv', 
   sep = '\t', header = TRUE, stringsAsFactors = FALSE)
 
 #delete disease category rows
@@ -43,7 +43,7 @@ kegg_categories<-kegg_categories[kegg_categories$Category != 6,]
 
 #Kegg-gene annotation
 kegg_db <- fread(
-  file = '~/tblab/ana/tests/dbNSFP4.3_gene.complete.txt', 
+  file = 'dbNSFP4.3_gene.complete.txt', 
   sep = '\t', header = TRUE, stringsAsFactors = FALSE, 
   select = c("Gene_name", "Pathway(KEGG)_id", "Pathway(KEGG)_full"))
 
