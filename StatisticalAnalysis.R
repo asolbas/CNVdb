@@ -3,7 +3,7 @@ library("stringr")
 library(ggplot2)
 
 #INPUT DATA---------------------------------------------------------------------
-df <- read.table(file = '~/bioinfo/fjd/MAF_CNV_FJD/results/MAF_CNV_Database_PC.tsv', sep = '\t', header = TRUE)
+df <- read.table(file = 'MAF_CNV_Database_PC.tsv', sep = '\t', header = TRUE)
 
 #delete X and Y chromosoms
 df<- df[!(df$X0=="X" | df$X0=="Y"),]
@@ -21,7 +21,6 @@ DEL <- df[df$AC_DEL>=1,]
 #venn diagram: se han considerado solo variantes únicas
 x<-list("Duplications"=DUP$ID,"Deletions"=DEL$ID)
 ggvenn(x,fill_alpha = 0.4,text_size = 4.5,stroke_size = 0.5, fill_color = c("#FF6600", "#3366FF"))
-ggsave("~/tblab/ana/database/Figures/VennDiag.png", bg = "white")
 
 #parsear las enfermedades
 i=14
@@ -29,7 +28,6 @@ while(i<ncol(DUP)){
   disease<-unlist(strsplit(colnames(DUP[i]), split='_', fixed=TRUE))[1] #disease name
   x<-list("DUP"=DUP[DUP[,i]>=1,]$ID,"DEL"=DEL[DEL[,i+3]>=1,]$ID)
   ggvenn(x,fill_alpha = 0.4,text_size = 4.5,stroke_size = 0.5, fill_color = c("#FF6600", "#3366FF"))
-  ggsave(paste("~/tblab/ana/database/Figures/",disease,".png"), bg = "white")
   i=i+14
 }
 
@@ -163,10 +161,10 @@ ggplot(regions_by_AC,aes(x=AC,y=number_regions,color=disease, linetype=type)) +
 
 #BOXPLOT-----------------------------------------------------------------------
 #import file with confidence variants
-variants <- read.table(file = '~/bioinfo/fjd/MAF_CNV_FJD/results/conf_DB_variants_filtered_07_05.tsv', sep = '\t', header = TRUE,check.names=FALSE)
+variants <- read.table(file = 'conf_DB_variants_filtered_07_05.tsv', sep = '\t', header = TRUE,check.names=FALSE)
 
 #import file with metadata
-metadata <- read.table(file = '~/bioinfo/fjd/MAF_FJD_v3.0/metadata/date_2022_03_28/mymetadatapathology_uniq_2022_03_28.txt', sep = '\t', header = TRUE)
+metadata <- read.table(file = 'mymetadatapathology_uniq_2022_03_28.txt', sep = '\t', header = TRUE)
 
 new_names<-vector()
 for (name in colnames(variants)){
@@ -245,10 +243,7 @@ data_DEL$type <- as.factor(data_DEL$type)
 
 ggplot(data=data, aes(x=type, y=AC, fill=type)) +
   geom_boxplot() +
-  #geom_boxplot(outlier.shape = NA) +
-  #scale_fill_brewer(palette="Paired") +
   scale_fill_manual(values=c("cornflowerblue","#FF6633"))  +
-  #ylim(0,30) +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
 #run paired t test
