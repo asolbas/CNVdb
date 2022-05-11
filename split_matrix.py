@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-df = pd.read_csv('~/bioinfo/fjd/MAF_CNV_FJD/results/MAF_CNV_Database_PC.tsv', sep="\t", low_memory=False)
+df = pd.read_csv('MAF_CNV_Database_PC.tsv', sep="\t", low_memory=False)
 
 
 #remove X and Y chromosomes
@@ -17,8 +17,8 @@ df_DUP.insert(3,"SV_type","DUP")
 df_DEL=df[df['AC_DEL']>=1].filter(regex= "chr|start|end|^AN$|DEL")
 df_DEL.insert(3,"SV_type","DEL")
 
-DUP_file = '~/tblab/ana/database/DB_DUP_PC.tsv'
-DEL_file = '~/tblab/ana/database/DB_DEL_PC.tsv'
+DUP_file = 'DB_DUP_PC.tsv'
+DEL_file = 'DB_DEL_PC.tsv'
 
 
 df_DUP.to_csv(DUP_file, sep='\t', index=False)
