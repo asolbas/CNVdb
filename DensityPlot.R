@@ -1,6 +1,6 @@
 library(ggplot2)
 
-df <- read.table(file = '~/bioinfo/fjd/MAF_CNV_FJD/results/MAF_CNV_Database_PC.tsv', 
+df <- read.table(file = 'MAF_CNV_Database_PC.tsv', 
                  sep = '\t', header = TRUE)
 
 #delete X and Y chromosoms
