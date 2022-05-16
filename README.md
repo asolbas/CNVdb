@@ -4,6 +4,8 @@ Statistical analysis, annotation and functional enrichment analsysis of the IIS-
 ### Usage
 These scripts were developed to analyse the CNV database of the Instituto de Investigación Sanitaria Fundación Jiménez Díaz (IIS-FJD). They are specific for this database and therefore they will not work for CNV databases that do not share the same structure. 
 
+The datasets used in the project are not included in this repository as they contain information from IIS-FJD patients. 
+
 ### Roadmap
 The files contained in this repository are: 
 - __StatisticalAnalysis.R__: statistical and exploratory data analysis of the database. 
