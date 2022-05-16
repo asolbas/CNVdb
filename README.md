@@ -15,8 +15,6 @@ The files contained in this repository are:
 
 ### Contact
 
-Ana Solbas Casajús
-
-a.solbas@alumnos.upm.es
+Ana Solbas Casajús - a.solbas@alumnos.upm.es
 
 Project Link: https://github.com/asolbas/CNVdb
